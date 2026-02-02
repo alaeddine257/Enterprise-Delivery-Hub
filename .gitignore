@@ -9,6 +9,7 @@ __pycache__/
 .venv/
 venv/
 ENV/
+myenv/
 
 # SQLite database
 *.db
