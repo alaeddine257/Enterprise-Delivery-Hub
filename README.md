@@ -78,9 +78,17 @@ You should see the message: `Initialized the database.`
 
 Start the Flask development server:
 
+#### On Windows:
 ```bash
 python run.py
 ```
+
+#### On macOS/Linux:
+```bash
+python run.py
+```
+
+**Note:** On some systems, you may need to use `python3 run.py` instead of `python run.py`.
 
 You should see output similar to:
 ```
@@ -122,6 +130,8 @@ export FLASK_APP=run.py
 flask init-db
 python run.py
 ```
+
+**Note:** After activating the virtual environment, you can use `python` instead of `python3`.
 
 Then open http://127.0.0.1:5000 in your browser.
 
