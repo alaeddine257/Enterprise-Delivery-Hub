@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="panel">
+  <h2>Create Task</h2>
+  <form class="form-grid" method="post" action="{{ url_for('main.create_task') }}">
+    <label>
+      Task title
+      <input type="text" name="title" placeholder="e.g. Prepare vendor RFP" required />
+    </label>
+    <label>
+      Project
+      <select name="project_id" required>
+        {% for project in projects %}
+        <option value="{{ project['id'] }}">{{ project['name'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Assignee
+      <select name="assignee_id">
+        <option value="">Unassigned</option>
+        {% for employee in employees %}
+        <option value="{{ employee['id'] }}">{{ employee['full_name'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Priority
+      <select name="priority">
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+        <option>Critical</option>
+      </select>
+    </label>
+    <label>
+      Status
+      <select name="status">
+        <option>Not Started</option>
+        <option>In Progress</option>
+        <option>Blocked</option>
+        <option>Done</option>
+      </select>
+    </label>
+    <label>
+      Due date
+      <input type="date" name="due_date" />
+    </label>
+    <button type="submit">Add task</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Task Board</h2>
+  <div class="toolbar">
+    <input type="search" placeholder="Search tasks" data-table-search="#tasks-table" />
+  </div>
+  <div class="table" id="tasks-table">
+    <div class="table-row table-header">
+      <div>Task</div>
+      <div>Project</div>
+      <div>Assignee</div>
+      <div>Priority</div>
+      <div>Status</div>
+      <div>Due</div>
+      <div>Actions</div>
+    </div>
+    {% for task in tasks %}
+    <div class="table-row">
+      <div>{{ task['title'] }}</div>
+      <div>{{ task['project_name'] }}</div>
+      <div>{{ task['assignee'] or 'Unassigned' }}</div>
+      <div><span class="badge">{{ task['priority'] }}</span></div>
+      <div><span class="status {{ task['status'] | lower | replace(' ', '-') }}">{{ task['status'] }}</span></div>
+      <div>{{ task['due_date'] or '-' }}</div>
+      <div>
+        {% if task['status'] != 'Done' %}
+        <form method="post" action="{{ url_for('main.mark_task_done', task_id=task['id']) }}">
+          <button class="ghost" type="submit">Mark done</button>
+        </form>
+        {% else %}
+        <span class="muted">Completed</span>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">No tasks yet. Add tasks to build your delivery plan.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

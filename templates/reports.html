@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="panel">
+  <h2>Portfolio Reports</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <p>Total Budget</p>
+      <h3>${{ '%.2f' | format(budget_stats['total_budget'] or 0) }}</h3>
+      <span class="muted">Avg project ${{ '%.2f' | format(budget_stats['avg_budget'] or 0) }}</span>
+    </div>
+    <div class="kpi-card">
+      <p>Projects Count</p>
+      <h3>{{ budget_stats['total_projects'] or 0 }}</h3>
+      <span class="muted">Active portfolio size</span>
+    </div>
+  </div>
+</section>
+
+<section class="panel-grid">
+  <section class="panel">
+    <h2>Project Status</h2>
+    <ul class="list">
+      {% for row in status_breakdown %}
+      <li>
+        <span>{{ row['status'] }}</span>
+        <span class="badge">{{ row['total'] }}</span>
+      </li>
+      {% else %}
+      <li class="muted">No project data yet.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>Task Status</h2>
+    <ul class="list">
+      {% for row in task_breakdown %}
+      <li>
+        <span>{{ row['status'] }}</span>
+        <span class="badge">{{ row['total'] }}</span>
+      </li>
+      {% else %}
+      <li class="muted">No task data yet.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>Risk Status</h2>
+    <ul class="list">
+      {% for row in risk_breakdown %}
+      <li>
+        <span>{{ row['status'] }}</span>
+        <span class="badge">{{ row['total'] }}</span>
+      </li>
+      {% else %}
+      <li class="muted">No risk data yet.</li>
+      {% endfor %}
+    </ul>
+  </section>
+</section>
+{% endblock %}

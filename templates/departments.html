@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="panel">
+  <h2>Create Department</h2>
+  <form class="form-grid" method="post" action="{{ url_for('main.create_department') }}">
+    <label>
+      Department name
+      <input type="text" name="name" placeholder="e.g. Technology" required />
+    </label>
+    <label>
+      Department head
+      <input type="text" name="head" placeholder="e.g. Fatima G." required />
+    </label>
+    <button type="submit">Add department</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Departments</h2>
+  <div class="toolbar">
+    <input type="search" placeholder="Search departments" data-table-search="#departments-table" />
+  </div>
+  <div class="table" id="departments-table">
+    <div class="table-row table-header">
+      <div>Name</div>
+      <div>Head</div>
+      <div>Created</div>
+    </div>
+    {% for department in departments %}
+    <div class="table-row">
+      <div>{{ department['name'] }}</div>
+      <div>{{ department['head'] }}</div>
+      <div>{{ department['created_at'] }}</div>
+    </div>
+    {% else %}
+    <div class="empty-state">No departments registered yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

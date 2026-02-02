@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="panel">
+  <h2>Log Risk</h2>
+  <form class="form-grid" method="post" action="{{ url_for('main.create_risk') }}">
+    <label>
+      Project
+      <select name="project_id" required>
+        {% for project in projects %}
+        <option value="{{ project['id'] }}">{{ project['name'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Risk title
+      <input type="text" name="title" placeholder="e.g. Vendor onboarding delay" required />
+    </label>
+    <label>
+      Impact
+      <select name="impact">
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+      </select>
+    </label>
+    <label>
+      Likelihood
+      <select name="likelihood">
+        <option>Low</option>
+        <option selected>Medium</option>
+        <option>High</option>
+      </select>
+    </label>
+    <label>
+      Mitigation plan
+      <input type="text" name="mitigation" placeholder="e.g. Escalate resource approval" required />
+    </label>
+    <label>
+      Status
+      <select name="status">
+        <option>Open</option>
+        <option>Mitigated</option>
+        <option>Accepted</option>
+      </select>
+    </label>
+    <button type="submit">Log risk</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Risk Register</h2>
+  <div class="toolbar">
+    <input type="search" placeholder="Search risks" data-table-search="#risks-table" />
+  </div>
+  <div class="table" id="risks-table">
+    <div class="table-row table-header">
+      <div>Risk</div>
+      <div>Project</div>
+      <div>Impact</div>
+      <div>Likelihood</div>
+      <div>Status</div>
+      <div>Mitigation</div>
+      <div>Actions</div>
+    </div>
+    {% for risk in risks %}
+    <div class="table-row">
+      <div>{{ risk['title'] }}</div>
+      <div>{{ risk['project_name'] }}</div>
+      <div><span class="badge">{{ risk['impact'] }}</span></div>
+      <div><span class="badge">{{ risk['likelihood'] }}</span></div>
+      <div><span class="status {{ risk['status'] | lower | replace(' ', '-') }}">{{ risk['status'] }}</span></div>
+      <div>{{ risk['mitigation'] }}</div>
+      <div>
+        {% if risk['status'] == 'Open' %}
+        <form method="post" action="{{ url_for('main.mitigate_risk', risk_id=risk['id']) }}">
+          <button class="ghost" type="submit">Mark mitigated</button>
+        </form>
+        {% else %}
+        <span class="muted">Reviewed</span>
+        {% endif %}
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">No risks logged yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

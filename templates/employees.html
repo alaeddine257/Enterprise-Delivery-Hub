@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="panel">
+  <h2>Onboard Employee</h2>
+  <form class="form-grid" method="post" action="{{ url_for('main.create_employee') }}">
+    <label>
+      Full name
+      <input type="text" name="full_name" placeholder="e.g. Rami K." required />
+    </label>
+    <label>
+      Email
+      <input type="email" name="email" placeholder="e.g. rami@company.com" required />
+    </label>
+    <label>
+      Role
+      <input type="text" name="role" placeholder="e.g. Product Manager" required />
+    </label>
+    <label>
+      Department
+      <select name="department_id">
+        <option value="">Unassigned</option>
+        {% for department in departments %}
+        <option value="{{ department['id'] }}">{{ department['name'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <button type="submit">Add employee</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Employees</h2>
+  <div class="toolbar">
+    <input type="search" placeholder="Search employees" data-table-search="#employees-table" />
+  </div>
+  <div class="table" id="employees-table">
+    <div class="table-row table-header">
+      <div>Name</div>
+      <div>Email</div>
+      <div>Role</div>
+      <div>Department</div>
+      <div>Created</div>
+    </div>
+    {% for employee in employees %}
+    <div class="table-row">
+      <div>{{ employee['full_name'] }}</div>
+      <div>{{ employee['email'] }}</div>
+      <div>{{ employee['role'] }}</div>
+      <div>{{ employee['department'] or 'Unassigned' }}</div>
+      <div>{{ employee['created_at'] }}</div>
+    </div>
+    {% else %}
+    <div class="empty-state">No employees onboarded yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="panel">
+  <h2>New Project Intake</h2>
+  <form class="form-grid" method="post" action="{{ url_for('main.create_project') }}">
+    <label>
+      Project name
+      <input type="text" name="name" placeholder="e.g. Core Banking Upgrade" required />
+    </label>
+    <label>
+      Owner
+      <input type="text" name="owner" placeholder="e.g. A. Damak" required />
+    </label>
+    <label>
+      Department
+      <select name="department_id">
+        <option value="">Unassigned</option>
+        {% for department in departments %}
+        <option value="{{ department['id'] }}">{{ department['name'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      Budget (USD)
+      <input type="number" name="budget" min="0" step="0.01" value="0" />
+    </label>
+    <label>
+      Status
+      <select name="status">
+        <option>Backlog</option>
+        <option>In Progress</option>
+        <option>At Risk</option>
+        <option>Closed</option>
+      </select>
+    </label>
+    <button type="submit">Create project</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Project Portfolio</h2>
+  <div class="toolbar">
+    <input type="search" placeholder="Search projects" data-table-search="#projects-table" />
+  </div>
+  <div class="table" id="projects-table">
+    <div class="table-row table-header">
+      <div>Project</div>
+      <div>Owner</div>
+      <div>Status</div>
+      <div>Department</div>
+      <div>Budget</div>
+      <div>Actions</div>
+    </div>
+    {% for project in projects %}
+    <div class="table-row">
+      <div>{{ project['name'] }}</div>
+      <div>{{ project['owner'] }}</div>
+      <div><span class="status {{ project['status'] | lower | replace(' ', '-') }}">{{ project['status'] }}</span></div>
+      <div>{{ project['department'] or 'Unassigned' }}</div>
+      <div>${{ '%.2f' | format(project['budget'] or 0) }}</div>
+      <div class="table-actions">
+        {% if project['status'] != 'Closed' %}
+        <form method="post" action="{{ url_for('main.close_project', project_id=project['id']) }}">
+          <button class="ghost" type="submit">Close</button>
+        </form>
+        {% else %}
+        <span class="muted">Completed</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="table-row">
+      <div class="update-row">
+        <form class="inline-form" method="post" action="{{ url_for('main.add_project_update', project_id=project['id']) }}">
+          <input type="text" name="summary" placeholder="Add status update for {{ project['name'] }}" />
+          <button type="submit">Add update</button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">No projects yet. Create one using the intake form above.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Enterprise Project Tracker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-grid">
+        <div>
+          <h1>Enterprise Delivery Hub</h1>
+          <p>Unified visibility across programs, people, and operational risk.</p>
+        </div>
+        <nav class="site-nav">
+          <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('main.projects') }}">Projects</a>
+          <a href="{{ url_for('main.departments') }}">Departments</a>
+          <a href="{{ url_for('main.employees') }}">Employees</a>
+          <a href="{{ url_for('main.tasks') }}">Tasks</a>
+          <a href="{{ url_for('main.risks') }}">Risks</a>
+          <a href="{{ url_for('main.reports') }}">Reports</a>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <div class="container">
+        <span>Enterprise Delivery Hub &mdash; Operational Portfolio System</span>
+        <span class="muted" data-clock></span>
+      </div>
+    </footer>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
