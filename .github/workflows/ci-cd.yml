@@ -3,6 +3,8 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   pipeline:
@@ -13,26 +15,55 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v4
+      # 1️⃣ Checkout repo
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      # 2️⃣ Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install deps
+      # 3️⃣ Install dependencies
+      - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install --no-cache-dir -r requirements.txt
 
+      # 4️⃣ Initialize database schema
+      - name: Initialize database schema
+        run: |
+          python -c "from app import create_app; app = create_app(); \
+with app.app_context(): \
+  from app.db import get_db; db = get_db(); \
+  db.executescript(open('app/schema.sql').read())"
+
+      # 5️⃣ Seed data for tests
+      - name: Seed test data
+        run: |
+          python -c "from app import create_app; app = create_app(); \
+with app.app_context(): \
+  from app.db import get_db; db = get_db(); \
+  db.execute(\"INSERT INTO departments(name) VALUES ('IT')\"); \
+  db.execute(\"INSERT INTO projects(name, department_id) VALUES ('Project A', 1)\"); \
+  db.execute(\"INSERT INTO tasks(name, project_id) VALUES ('Task 1', 1)\"); \
+  db.execute(\"INSERT INTO risks(name, project_id) VALUES ('Risk 1', 1)\"); \
+  db.commit()"
+
+      # 6️⃣ Run tests
       - name: Run tests
-        run: pytest
+        run: pytest --cov=app --cov-report=term-missing
 
-      - name: Login to GHCR
+      # 7️⃣ Log in to GitHub Container Registry
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # 8️⃣ Build & push Docker image
       - name: Build & Push Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -40,10 +71,11 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/flask-app:latest
 
-      - name: Deploy on VM
+      # 9️⃣ Deploy on VM
+      - name: Deploy on VM via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: YOUR_VM_IP
+          host: 172.213.211.71
           username: azureuser
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
