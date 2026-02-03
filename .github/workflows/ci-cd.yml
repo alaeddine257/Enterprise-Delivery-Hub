@@ -45,13 +45,36 @@ jobs:
           from app import create_app
           app = create_app()
           with app.app_context():
-              from app.db import get_db
-              db = get_db()
-              db.execute("INSERT INTO departments(name) VALUES ('IT')")
-              db.execute("INSERT INTO projects(name, department_id) VALUES ('Project A', 1)")
-              db.execute("INSERT INTO tasks(name, project_id) VALUES ('Task 1', 1)")
-              db.execute("INSERT INTO risks(name, project_id) VALUES ('Risk 1', 1)")
-              db.commit()
+            from app.db import get_db
+            from datetime import datetime
+            now = datetime.utcnow().isoformat()
+            db = get_db()
+            # Insert a department with required fields
+            db.execute(
+              "INSERT OR IGNORE INTO departments (name, head, created_at) VALUES (?, ?, ?)",
+              ("IT", "CI Bot", now),
+            )
+            # Insert an employee to satisfy foreign keys
+            db.execute(
+              "INSERT OR IGNORE INTO employees (full_name, email, role, department_id, created_at) VALUES (?, ?, ?, ?, ?)",
+              ("CI User", "ci@example.com", "Engineer", 1, now),
+            )
+            # Insert a project with required fields
+            db.execute(
+              "INSERT OR IGNORE INTO projects (name, owner, status, department_id, budget, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+              ("Project A", "CI Bot", "Backlog", 1, 0, now),
+            )
+            # Insert a task with required fields
+            db.execute(
+              "INSERT OR IGNORE INTO tasks (project_id, title, assignee_id, priority, status, due_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              (1, "Task 1", 1, "Medium", "Not Started", now[:10], now),
+            )
+            # Insert a risk with required fields
+            db.execute(
+              "INSERT OR IGNORE INTO risks (project_id, title, impact, likelihood, mitigation, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+              (1, "Risk 1", "Medium", "Low", "Monitor", "Open", now),
+            )
+            db.commit()
           PY
 
       - name: Run tests
