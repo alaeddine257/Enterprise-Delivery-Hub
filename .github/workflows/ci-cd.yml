@@ -30,21 +30,29 @@ jobs:
 
       - name: Initialize database schema
         run: |
-          python -c "from app import create_app; app = create_app(); \
-          with app.app_context(): \
-            from app.db import get_db; db = get_db(); \
-            db.executescript(open('app/schema.sql').read())"
+          python - <<'PY'
+          from app import create_app
+          app = create_app()
+          with app.app_context():
+              from app.db import get_db
+              db = get_db()
+              db.executescript(open('app/schema.sql').read())
+          PY
 
       - name: Seed test data
         run: |
-          python -c "from app import create_app; app = create_app(); \
-          with app.app_context(): \
-            from app.db import get_db; db = get_db(); \
-            db.execute(\"INSERT INTO departments(name) VALUES ('IT')\"); \
-            db.execute(\"INSERT INTO projects(name, department_id) VALUES ('Project A', 1)\"); \
-            db.execute(\"INSERT INTO tasks(name, project_id) VALUES ('Task 1', 1)\"); \
-            db.execute(\"INSERT INTO risks(name, project_id) VALUES ('Risk 1', 1)\"); \
-            db.commit()"
+          python - <<'PY'
+          from app import create_app
+          app = create_app()
+          with app.app_context():
+              from app.db import get_db
+              db = get_db()
+              db.execute("INSERT INTO departments(name) VALUES ('IT')")
+              db.execute("INSERT INTO projects(name, department_id) VALUES ('Project A', 1)")
+              db.execute("INSERT INTO tasks(name, project_id) VALUES ('Task 1', 1)")
+              db.execute("INSERT INTO risks(name, project_id) VALUES ('Risk 1', 1)")
+              db.commit()
+          PY
 
       - name: Run tests
         run: pytest --cov=app --cov-report=term-missing
