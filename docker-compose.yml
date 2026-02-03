@@ -1,8 +1,6 @@
-version: "3.9"
-
 services:
   web:
-    image: ghcr.io/<ORG_OR_USER>/flask-app:latest
+    image: ghcr.io/alaeddine257/flask-app:latest
     container_name: flask-app
     restart: always
     ports:
