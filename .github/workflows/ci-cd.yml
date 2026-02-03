@@ -104,5 +104,7 @@ jobs:
           password: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/Enterprise-Delivery-Hub
+            git reset --hard
+            git pull origin main
             docker compose pull
             docker compose up -d
