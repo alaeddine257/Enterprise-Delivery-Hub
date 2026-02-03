@@ -101,7 +101,7 @@ jobs:
         with:
           host: 172.213.211.71
           username: azureuser
-          key: ${{ secrets.VM_SSH_KEY }}
+          password: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/Enterprise-Delivery-Hub
             docker compose pull
